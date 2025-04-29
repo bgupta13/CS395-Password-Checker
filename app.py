@@ -5,6 +5,7 @@ import hashlib
 import os
 import requests
 import re
+import html
 
 HIBP_API_URL = "https://api.pwnedpasswords.com/range/"
 app = Flask(__name__)
@@ -27,6 +28,22 @@ def checkPwned(password):
         if h == suffix:
             return True, count
     return False, 0
+
+#function to validate the password and confirm that the password isn't malicious code
+def passValidate(password):
+    #length check
+    if len(password) > 30:
+        return False, "Password must be less than 30 characters."
+
+    #reject HTML tags or encoded characters that can lead to XSS
+    if re.search(r'<[^>]*>', password) or re.search(r'&[a-z]+;', password):
+        return False, "Password contains potentially malicious characters."
+
+    #reject any control characters
+    if any(ord(c) < 32 for c in password):
+        return False, "Password contains invalid control characters."
+
+    return True, "Password is valid."
 
 #function to check whether any english words have been used in the password
 def hasEngWord(password):
@@ -127,6 +144,12 @@ def analyze():
     data = request.get_json()
     password = data.get('password')
     secLevel = int(data.get('security_level', 1))
+    
+    valid, message = passValidate(password)
+    if not valid:
+        return jsonify({
+            'error': message
+        }), 400
 
     pwned, pwnedCount = checkPwned(password)
     strengthMsg = passCheck(secLevel, password)
