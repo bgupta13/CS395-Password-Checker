@@ -155,10 +155,27 @@ def analyze():
         }), 400
 
     pwned, pwnedCount = checkPwned(password)
+    
+    if pwned:
+        # If breached, return immediately with breach info
+        return jsonify({
+            'strength_feedback': ["This password has been found in a data breach! Please choose a new password."],
+            'strength_color': "red",
+            'breached': True,
+            'breach_count': pwnedCount
+        })
+
     strengthMsg = passCheck(secLevel, password)
 
+    #calculate what color to return depending on strength
+    if all("Good job!" in msg for msg in strengthMsg):
+        strengthColor = "green"
+    else:
+        strengthColor = "red"
+    
     return jsonify({
         'strength_feedback': strengthMsg,
+        'strength_color': strengthColor,
         'breached': pwned,
         'breach_count': pwnedCount
     })
