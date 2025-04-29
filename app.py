@@ -37,7 +37,7 @@ def passValidate(password):
 
     #reject HTML tags or encoded characters that can lead to XSS
     if re.search(r'<[^>]*>', password) or re.search(r'&[a-z]+;', password):
-        return False, "Password contains potentially malicious characters."
+        return False, "Password contains potentially malicious characters. Please avoid putting anything between '<>' or anything between '&' and ';'"
 
     #reject any control characters
     if any(ord(c) < 32 for c in password):
