@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Password Strength Checker</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <h1>Password Strength Checker 🔒</h1>
+      
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="Enter your password" />
+      </div>
+
+      <div class="form-group">
+        <label for="security-level">Security Level:</label>
+        <select id="security-level">
+          <option value="1">Level 1 (Basic)</option>
+          <option value="2">Level 2 (Moderate)</option>
+          <option value="3">Level 3 (Strong)</option>
+          <option value="4">Level 4 (Very Strong)</option>
+        </select>
+      </div>
+
+      <button id="analyze-btn">Analyze Password</button>
+
+      <div id="loader" class="loader" style="display: none;"></div>
+
+      <div id="result" class="result"></div>
+    </div>
+  </div>
+
+  <script src="/static/main.js"></script>
+</body>
+</html>

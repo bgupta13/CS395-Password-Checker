@@ -118,7 +118,7 @@ def passCheck(secLevel, password):
             if not hasLower:
                 messages.append("There aren't any lower-case letters. Add some (minimum 3).")
             if not hasNumber:
-                messages.append("There are no numbers. You need at least two for level 3.")
+                messages.append("There are no numbers. You need at least one for level 3.")
             if not hasSpecial:
                 messages.append("There are no special characters. You need at least one.")
     
