@@ -31,6 +31,10 @@ def checkPwned(password):
 
 #function to validate the password and confirm that the password isn't malicious code
 def passValidate(password):
+    #make sure the password is a string
+    if not isinstance(password, str):
+        return False, "Password must be a string."
+
     #length check
     if len(password) > 30:
         return False, "Password must be less than 30 characters."
