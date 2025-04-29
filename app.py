@@ -124,6 +124,4 @@ def analyze():
     return jsonify({
         'breached': breached,
         'breach_count': breach_count,
-        'strength': strength,
-        'strengthColor': strength_color
     })
