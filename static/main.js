@@ -1,62 +1,61 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const analyzeBtn = document.getElementById('analyze-btn');
-    const resultDiv = document.getElementById('result');
-    const loader = document.getElementById('loader');
-  
-    analyzeBtn.addEventListener('click', async () => {
-      const password = document.getElementById('password').value;
-      const securityLevel = document.getElementById('security-level').value;
-  
-      if (!password) {
-        showError("Please enter a password.");
-        return;
-      }
-  
-      loader.style.display = 'block';
-      resultDiv.innerHTML = '';
-  
-      try {
-        const response = await fetch('/analyze', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            password: password,
-            security_level: securityLevel
-          })
+  const analyzeBtn = document.getElementById('analyze-btn');
+  const resultDiv = document.getElementById('result');
+  const loader = document.getElementById('loader');
+
+  analyzeBtn.addEventListener('click', async () => {
+    const password = document.getElementById('password').value;
+    const securityLevel = document.getElementById('security-level').value;
+
+    if (!password) {
+      showFeedback("Please enter a password.", "red");
+      return;
+    }
+
+    loader.style.display = 'block';
+    resultDiv.innerHTML = '';
+
+    try {
+      const response = await fetch('/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          password: password,
+          security_level: securityLevel
+        })
+      });
+
+      const data = await response.json();
+      loader.style.display = 'none';
+
+      if (response.ok) {
+        let feedbackHtml = `<div class="feedback ${data.strength_color}"><h3>Feedback:</h3><ul>`;
+        data.strength_feedback.forEach(msg => {
+          feedbackHtml += `<li>${msg}</li>`;
         });
-  
-        const data = await response.json();
-        loader.style.display = 'none';
-  
-        if (response.ok) {
-          let feedbackHtml = `<div class="success"><h3>Feedback:</h3><ul>`;
-          data.strength_feedback.forEach(msg => {
-            feedbackHtml += `<li>${msg}</li>`;
-          });
-          feedbackHtml += `</ul>`;
-  
-          if (data.breached) {
-            feedbackHtml += `<p>⚠️ Password found in ${data.breach_count} breaches!</p>`;
-          } else {
-            feedbackHtml += `<p>✅ Password is safe in breach databases.</p>`;
-          }
-          feedbackHtml += `</div>`;
-  
-          resultDiv.innerHTML = feedbackHtml;
+        feedbackHtml += `</ul>`;
+
+        if (data.breached) {
+          feedbackHtml += `<p>⚠️ Password found in ${data.breach_count} breaches!</p>`;
         } else {
-          showError(data.error);
+          feedbackHtml += `<p>✅ Password is not found in breach databases.</p>`;
         }
-      } catch (error) {
-        loader.style.display = 'none';
-        console.error('Error:', error);
-        showError("An unexpected error occurred. Please try again later.");
+
+        feedbackHtml += `</div>`;
+        resultDiv.innerHTML = feedbackHtml;
+      } else {
+        showFeedback(data.error, "red");
       }
-    });
-  
-    function showError(message) {
-      resultDiv.innerHTML = `<div class="error">${message}</div>`;
+    } catch (error) {
+      loader.style.display = 'none';
+      console.error('Error:', error);
+      showFeedback("An unexpected error occurred. Please try again.", "red");
     }
   });
-  
+
+  function showFeedback(message, color) {
+    resultDiv.innerHTML = `<div class="feedback ${color}">${message}</div>`;
+  }
+});
