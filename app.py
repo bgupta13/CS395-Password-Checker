@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from nltk.corpus import words
+import nltk
 import hashlib
 import os
 import requests
@@ -7,6 +8,7 @@ import re
 
 HIBP_API_URL = "https://api.pwnedpasswords.com/range/"
 app = Flask(__name__)
+nltk.download('words')
 engWords = set(words.words())
 
 @app.route('/')
@@ -46,6 +48,7 @@ def securityLevel():
 
 #function to check password's strength depending on the sec. level preference indicated by the user
 def passCheck(secLevel, password):
+    messages = []
     length = len(password)
     hasCapital = bool(re.search(r'[A-Z]', password))
     hasLower = bool(re.search(r'[a-z]', password))
@@ -54,67 +57,69 @@ def passCheck(secLevel, password):
     containsEngWord = hasEngWord(password)
     if secLevel == 1:
         if length >= 10 and hasCapital and hasLower and hasNumber:
-            print("Good job! This password is strong enough for level 1!")
-        if length<10 or hasCapital == False or hasLower == False or hasNumber == False:
-            print("This password isn't strong enough for level 1 security.")
-        if length < 10:
-            print("The password isn't long enough, you need to have minimum 10 characters.")
-        if hasCapital == False:
-            print("There are no capital letters. You need at least one capital letter in level 1.")
-        if hasLower == False:
-            print("There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters.")
-        if hasNumber == False:
-            print("There aren't numbers. You need at least one number to achieve level 1 security.")
+            messages.append("Good job! This password is strong enough for level 1!")
+        else:
+            messages.append("This password isn't strong enough for level 1 security.")
+            if length < 10:
+                messages.append("The password isn't long enough, you need minimum 10 characters.")
+            if not hasCapital:
+                messages.append("There are no capital letters. You need at least one for level 1.")
+            if not hasLower:
+                messages.append("There aren't any lower-case letters. Please add some.")
+            if not hasNumber:
+                messages.append("There are no numbers. You need at least one.")
 
     elif secLevel == 2:
-        if length >=10 and hasCapital and hasLower and hasNumber and hasSpecial:
-            print("Good job! This password is strong enough for level 2 security!")
-        if length<10 or hasCapital == False or hasLower == False or hasNumber == False or hasSpecial == False:
-            print("This password isn't strong enough for level 2 security.")
-        if length < 10:
-            print("The password isn't long enough, you need to have minimum 10 characters.")
-        if hasCapital == False:
-            print("There are no capital letters. You need at least one capital letter in level 2.")
-        if hasLower == False:
-            print("There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters.")
-        if hasNumber == False:
-            print("There are no numbers. You need at least one number to achieve level 2 security.")
-        if hasSpecial == False:
-            print("There are no special characters (!@#$%^&*()?<>). You need at least one for level 2 security.")
+        if length >= 10 and hasCapital and hasLower and hasNumber and hasSpecial:
+            messages.append("Good job! This password is strong enough for level 2 security!")
+        else:
+            messages.append("This password isn't strong enough for level 2 security.")
+            if length < 10:
+                messages.append("The password isn't long enough, you need minimum 10 characters.")
+            if not hasCapital:
+                messages.append("There are no capital letters. You need at least one for level 2.")
+            if not hasLower:
+                messages.append("There aren't any lower-case letters. Please add some.")
+            if not hasNumber:
+                messages.append("There are no numbers. You need at least one.")
+            if not hasSpecial:
+                messages.append("There are no special characters (!@#$%^&*()?<>). You need at least one for level 2.")
     
     elif secLevel == 3:
-        if length >=12 and hasCapital and hasLower and hasNumber and hasSpecial:
-            print("Good job! This password is strong enough for level 3 security!")
-        if length < 12 or hasCapital == False or hasLower == False or hasNumber == False or hasSpecial == False:
-            print("This password isn't strong enough for level 3 security.")
-        if length < 12:
-            print("The password isn't long enough, you need to have minimum 12 characters.")
-        if hasCapital == False:
-            print("There are no capital letters. You need at least one capital letter in level 3.")
-        if hasLower == False:
-            print("There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters (minimum 3)")
-        if hasNumber == False:
-            print("There are no numbers. You need at least two numbers to achieve level 3 security.")
-        if hasSpecial == False:
-            print("There are no special characters (!@#$%^&*()?<>). You need at least one for level 2 security.")
+        if length >= 12 and hasCapital and hasLower and hasNumber and hasSpecial:
+            messages.append("Good job! This password is strong enough for level 3 security!")
+        else:
+            messages.append("This password isn't strong enough for level 3 security.")
+            if length < 12:
+                messages.append("The password isn't long enough, you need minimum 12 characters.")
+            if not hasCapital:
+                messages.append("There are no capital letters. You need at least one for level 3.")
+            if not hasLower:
+                messages.append("There aren't any lower-case letters. Add some (minimum 3).")
+            if not hasNumber:
+                messages.append("There are no numbers. You need at least two for level 3.")
+            if not hasSpecial:
+                messages.append("There are no special characters. You need at least one.")
     
     elif secLevel == 4:
-        if length >=12 and hasCapital and hasLower and hasNumber and hasSpecial and containsEngWord == False:
-            print("Good job! This password is strong enough for level 4 security!")
-        if length < 12 or hasCapital == False or hasLower == False or hasNumber == False or hasSpecial == False or containsEngWord:
-            print("This password isn't strong enough for level 4 security.")
-        if length < 12:
-            print("The password isn't long enough, you need to have minimum 12 characters.")
-        if hasCapital == False:
-            print("There are no capital letters. You need at least one capital letter in level 4.")
-        if hasLower == False:
-            print("There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters (minimum 3)")
-        if hasNumber == False:
-            print("There are no numbers. You need at least two numbers to achieve level 4 security.")
-        if hasSpecial == False:
-            print("There are no special characters (!@#$%^&*()?<>). You need at least one for level 4 security.")
-        if hasEngWord:
-            print("There is an actual english word in your password. No real words are allowed for level 4 security.")
+        if length >= 12 and hasCapital and hasLower and hasNumber and hasSpecial and not containsEngWord:
+            messages.append("Good job! This password is strong enough for level 4 security!")
+        else:
+            messages.append("This password isn't strong enough for level 4 security.")
+            if length < 12:
+                messages.append("The password isn't long enough, you need minimum 12 characters.")
+            if not hasCapital:
+                messages.append("There are no capital letters. You need at least one for level 4.")
+            if not hasLower:
+                messages.append("There aren't any lower-case letters. Add some (minimum 3).")
+            if not hasNumber:
+                messages.append("There are no numbers. You need at least two for level 4.")
+            if not hasSpecial:
+                messages.append("There are no special characters. You need at least one.")
+            if containsEngWord:
+                messages.append("There is an English word in your password. No real words allowed for level 4.")
+
+    return messages
         
 #routing to check password strength and also check for any breaches
 @app.route('/analyze', methods=['POST'])
@@ -124,10 +129,10 @@ def analyze():
     secLevel = int(data.get('security_level', 1))
 
     pwned, pwnedCount = checkPwned(password)
-    strength_msg = passCheck(secLevel, password)
+    strengthMsg = passCheck(secLevel, password)
 
     return jsonify({
-        'strength_feedback': strength_msg,
+        'strength_feedback': strengthMsg,
         'breached': pwned,
         'breach_count': pwnedCount
     })
