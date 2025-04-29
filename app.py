@@ -139,7 +139,6 @@ def passCheck(secLevel, password):
                 messages.append("There are no special characters. You need at least one.")
             if containsEngWord:
                 messages.append("There is an English word in your password. No real words allowed for level 4.")
-
     return messages
         
 #routing to check password strength and also check for any breaches
