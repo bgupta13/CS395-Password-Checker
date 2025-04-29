@@ -9,12 +9,16 @@ HIBP_API_URL = "https://api.pwnedpasswords.com/range/"
 app = Flask(__name__)
 engWords = set(words.words())
 
+@app.route('/')
+def home():
+    return render_template('index.html')
+
 #function to check whether the password has been compromised using Have I Been Pwned's database
-def check_pwned_password(password):
-    sha1_password = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
-    prefix = sha1_password[:5]
+def checkPwned(password):
+    sha1Password = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
+    prefix = sha1Password[:5]
     response = requests.get(HIBP_API_URL + prefix)
-    suffix = sha1_password[5:]
+    suffix = sha1Password[5:]
     
     for line in response.text.splitlines():
         h, count = line.split(':')
@@ -47,81 +51,86 @@ def passCheck(secLevel, password):
     hasLower = bool(re.search(r'[a-z]', password))
     hasNumber = bool(re.search(r'\d', password))
     hasSpecial = bool(re.search(r'[!@#$%^&*(),.?":{}|<>]', password))
-    
+    containsEngWord = hasEngWord(password)
     if secLevel == 1:
         if length >= 10 and hasCapital and hasLower and hasNumber:
-            return "Good job! This password is strong enough for level 1!"
+            print("Good job! This password is strong enough for level 1!")
         if length<10 or hasCapital == False or hasLower == False or hasNumber == False:
-            return "This password isn't strong enough for level 1 security."
+            print("This password isn't strong enough for level 1 security.")
         if length < 10:
-            return "The password isn't long enough, you need to have minimum 10 characters."
+            print("The password isn't long enough, you need to have minimum 10 characters.")
         if hasCapital == False:
-            return "There are no capital letters. You need at least one capital letter in level 1."
+            print("There are no capital letters. You need at least one capital letter in level 1.")
         if hasLower == False:
-            return "There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters."
+            print("There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters.")
         if hasNumber == False:
-            return "There aren't numbers. You need at least one number to achieve level 1 security."
+            print("There aren't numbers. You need at least one number to achieve level 1 security.")
 
     elif secLevel == 2:
         if length >=10 and hasCapital and hasLower and hasNumber and hasSpecial:
-            return "Good job! This password is strong enough for level 2 security!"
+            print("Good job! This password is strong enough for level 2 security!")
         if length<10 or hasCapital == False or hasLower == False or hasNumber == False or hasSpecial == False:
-            return "This password isn't strong enough for level 2 security."
+            print("This password isn't strong enough for level 2 security.")
         if length < 10:
-            return "The password isn't long enough, you need to have minimum 10 characters."
+            print("The password isn't long enough, you need to have minimum 10 characters.")
         if hasCapital == False:
-            return "There are no capital letters. You need at least one capital letter in level 2."
+            print("There are no capital letters. You need at least one capital letter in level 2.")
         if hasLower == False:
-            return "There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters."
+            print("There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters.")
         if hasNumber == False:
-            return "There are no numbers. You need at least one number to achieve level 2 security."
+            print("There are no numbers. You need at least one number to achieve level 2 security.")
         if hasSpecial == False:
-            return "There are no special characters (!@#$%^&*()?<>). You need at least one for level 2 security."
+            print("There are no special characters (!@#$%^&*()?<>). You need at least one for level 2 security.")
     
     elif secLevel == 3:
         if length >=12 and hasCapital and hasLower and hasNumber and hasSpecial:
-            return "Good job! This password is strong enough for level 3 security!"
+            print("Good job! This password is strong enough for level 3 security!")
         if length < 12 or hasCapital == False or hasLower == False or hasNumber == False or hasSpecial == False:
-            return "This password isn't strong enough for level 3 security."
+            print("This password isn't strong enough for level 3 security.")
         if length < 12:
-            return "The password isn't long enough, you need to have minimum 12 characters."
+            print("The password isn't long enough, you need to have minimum 12 characters.")
         if hasCapital == False:
-            return "There are no capital letters. You need at least one capital letter in level 3."
+            print("There are no capital letters. You need at least one capital letter in level 3.")
         if hasLower == False:
-            return "There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters (minimum 3)"
+            print("There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters (minimum 3)")
         if hasNumber == False:
-            return "There are no numbers. You need at least two numbers to achieve level 3 security."
+            print("There are no numbers. You need at least two numbers to achieve level 3 security.")
         if hasSpecial == False:
-            return "There are no special characters (!@#$%^&*()?<>). You need at least one for level 2 security."
+            print("There are no special characters (!@#$%^&*()?<>). You need at least one for level 2 security.")
     
     elif secLevel == 4:
-        if length >=12 and hasCapital and hasLower and hasNumber and hasSpecial and hasEngWord == False:
-            return "Good job! This password is strong enough for level 4 security!"
-        if length < 12 or hasCapital == False or hasLower == False or hasNumber == False or hasSpecial == False:
-            return "This password isn't strong enough for level 4 security."
+        if length >=12 and hasCapital and hasLower and hasNumber and hasSpecial and containsEngWord == False:
+            print("Good job! This password is strong enough for level 4 security!")
+        if length < 12 or hasCapital == False or hasLower == False or hasNumber == False or hasSpecial == False or containsEngWord:
+            print("This password isn't strong enough for level 4 security.")
         if length < 12:
-            return "The password isn't long enough, you need to have minimum 12 characters."
+            print("The password isn't long enough, you need to have minimum 12 characters.")
         if hasCapital == False:
-            return "There are no capital letters. You need at least one capital letter in level 4."
+            print("There are no capital letters. You need at least one capital letter in level 4.")
         if hasLower == False:
-            return "There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters (minimum 3)"
+            print("There aren't any lower-case letters. It is best to mix it up a bit. Please add some lowercase characters (minimum 3)")
         if hasNumber == False:
-            return "There are no numbers. You need at least two numbers to achieve level 4 security."
+            print("There are no numbers. You need at least two numbers to achieve level 4 security.")
         if hasSpecial == False:
-            return "There are no special characters (!@#$%^&*()?<>). You need at least one for level 4 security."
+            print("There are no special characters (!@#$%^&*()?<>). You need at least one for level 4 security.")
+        if hasEngWord:
+            print("There is an actual english word in your password. No real words are allowed for level 4 security.")
         
 #routing to check password strength and also check for any breaches
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    password = request.json.get('password')
-    
-    # Check if password has been compromised
-    breached, breach_count = check_pwned_password(password)
+    data = request.get_json()
+    password = data.get('password')
+    secLevel = int(data.get('security_level', 1))
 
-    # Evaluate password strength
-    strength, strength_color = passCheck(password)
+    pwned, pwnedCount = checkPwned(password)
+    strength_msg = passCheck(secLevel, password)
 
     return jsonify({
-        'breached': breached,
-        'breach_count': breach_count,
+        'strength_feedback': strength_msg,
+        'breached': pwned,
+        'breach_count': pwnedCount
     })
+
+if __name__ == '__main__':
+    app.run(debug=True)
