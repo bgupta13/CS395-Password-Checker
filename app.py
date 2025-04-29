@@ -53,7 +53,7 @@ def passValidate(password):
 def hasEngWord(password):
     n = len(password)
     for i in range(n):
-        for j in range(i + 1, n + 1):
+        for j in range(i + 3, n + 1):
             substring = password[i:j].lower()
             if len(substring) < 2:
                 continue
@@ -75,7 +75,7 @@ def passCheck(secLevel, password):
     hasLower = bool(re.search(r'[a-z]', password))
     hasNumber = bool(re.search(r'\d', password))
     hasSpecial = bool(re.search(r'[!@#$%^&*(),.?":{}|<>]', password))
-    containsEngWord = hasEngWord(password)
+    containsEngWord = bool(hasEngWord(password))
     if secLevel == 1:
         if length >= 10 and hasCapital and hasLower and hasNumber:
             messages.append("Good job! This password is strong enough for level 1!")
