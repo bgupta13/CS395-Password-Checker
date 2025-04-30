@@ -12,9 +12,12 @@
     <div class="card">
       <h1>Password Strength Checker 🔒</h1>
 
-      <div class="form-group">
+      <div class="form-group password-wrapper">
         <label for="password">Password:</label>
-        <input type="password" id="password" placeholder="Enter your password" />
+        <div class="password-container">
+          <input type="password" id="password" placeholder="Enter your password" />
+          <span id="toggle-password" class="toggle-password" title="Show/Hide Password">👁️</span>
+        </div>
       </div>
 
       <div class="form-group">

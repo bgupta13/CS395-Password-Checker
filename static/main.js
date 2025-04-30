@@ -2,9 +2,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const analyzeBtn = document.getElementById('analyze-btn');
   const resultDiv = document.getElementById('result');
   const loader = document.getElementById('loader');
+  const passwordInput = document.getElementById('password');
+  const togglePasswordIcon = document.getElementById('toggle-password');
 
+  // Toggle show/hide password
+  togglePasswordIcon.addEventListener('click', () => {
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+  });
+
+  // Analyze button logic
   analyzeBtn.addEventListener('click', async () => {
-    const password = document.getElementById('password').value;
+    const password = passwordInput.value;
     const securityLevel = document.getElementById('security-level').value;
 
     if (!password) {
