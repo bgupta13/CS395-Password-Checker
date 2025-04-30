@@ -74,7 +74,7 @@ def passCheck(secLevel, password):
     hasCapital = bool(re.search(r'[A-Z]', password))
     hasLower = bool(re.search(r'[a-z]', password))
     hasNumber = bool(re.search(r'\d', password))
-    hasSpecial = bool(re.search(r'[!@#$%^&*(),.?":{}|<>]', password))
+    hasSpecial = bool(re.search(r'[!@#$%^&*(),.?":{}|<>/]', password))
     containsEngWord = bool(hasEngWord(password))
     if secLevel == 1:
         if length >= 10 and hasCapital and hasLower and hasNumber:
