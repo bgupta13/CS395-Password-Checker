@@ -104,7 +104,7 @@ def passCheck(secLevel, password):
             if not hasNumber:
                 messages.append("There are no numbers. You need at least one.")
             if not hasSpecial:
-                messages.append("There are no special characters (!@#$%^&*()?<>). You need at least one for level 2.")
+                messages.append("There are no special characters (!@#$%^&*()?<>/). You need at least one for level 2.")
     
     elif secLevel == 3:
         if length >= 12 and hasCapital and hasLower and hasNumber and hasSpecial:
